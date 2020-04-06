@@ -40,6 +40,11 @@ exports.getMovies =
             res.status( 200 ).send( movies );
         }
         // If reviews are not desired, just query movies
+        else if (reviews.toLocaleLowerCase()==='false')
+        {
+            res.status(200).json({success : true,
+                msg     : "don't know why"})
+        }
         else
         {
             // === Prepare Query === //
