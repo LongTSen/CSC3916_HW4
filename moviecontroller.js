@@ -3,15 +3,15 @@ const Movie  =  require( "./movie" );
 exports.getMovies =
     async function( req , res )
     {
-        reviews = req.query.reviews;
+        var reviews = req.query.reviews;
         // If the request desires reviews, aggregate query for reviews too
         if (reviews && reviews.toLocaleLowerCase()=='true')
         {
             // === Prepare Query === //
-            query = req.query;
+            var query = req.query;
             delete query.reviews;
 
-            movies = await Movie.aggregate([
+            var movies = await Movie.aggregate([
                 {
                     $match:		query
                 },
