@@ -1,7 +1,7 @@
 const Movie  =  require( "./movie" );
 
 exports.getMovies =
-    async function( req , res )
+    function( req , res )
     {
         var reviews = req.query.reviews;
         // If the request desires reviews, aggregate query for reviews too
@@ -11,13 +11,13 @@ exports.getMovies =
             var query = req.query;
             delete query.reviews;
 
-            var movies = await Movie.aggregate([
+            movies = Movie.aggregate([
                 {
                     $match:		query
                 },
                 {
                     $lookup:	{
-                        from         : 'reviews',
+                        from         : "reviews",
                         localField   : 'title',
                         foreignField : 'movieTitle',
                         as           : 'reviews'
