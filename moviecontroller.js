@@ -5,7 +5,7 @@ exports.getMovies =
     {
         reviews = req.query.reviews;
         // If the request desires reviews, aggregate query for reviews too
-        if (reviews && reviews.toLocaleLowerCase()==='true')
+        if (reviews && reviews.toLocaleLowerCase()=='true')
         {
             // === Prepare Query === //
             query = req.query;
