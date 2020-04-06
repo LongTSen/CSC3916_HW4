@@ -33,7 +33,7 @@ var movieSchema  =  new Schema({
         unique   : true
     },
     released :	{
-        type     : String,
+        type     : Number,
         required : true
     },
     genre        :	{

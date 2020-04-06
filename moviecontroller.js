@@ -110,7 +110,7 @@ exports.postMovie =
                     {
                         toSave = new Movie({
                             title        : req.body.title,
-                            released     : req.body.yearReleased,
+                            released     : req.body.released,
                             genre        : req.body.genre,
                             actors       : req.body.actors
                         });
