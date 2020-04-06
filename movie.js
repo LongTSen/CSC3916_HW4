@@ -53,4 +53,9 @@ var movieSchema  =  new Schema({
 
 });
 
-module.exports = mongoose.model('Movie', movieSchema);
+//module.exports = mongoose.model('Movie', movieSchema);
+// === CREATE THE USER MODEL === //
+var Movie  =  mongoose.model( 'Movie' , movieSchema );
+
+// === EXPORT THE USER MODEL === //
+module.exports  =  Movie;
