@@ -3,10 +3,12 @@ var bodyParser = require('body-parser');
 var passport = require('passport');
 var authJwtController = require('./auth_jwt');
 var User = require('./Users');
-var Movie = require('./movies');
+var Movie = require('./movie');
 var jwt = require('jsonwebtoken');
 var cors = require('cors');
-
+var Review = require( './review' );
+var movieController =  require( './moviecontroller' );
+var reviewController =  require( './reviewController' );
 
 var app = express();
 module.exports = app; // for testing
@@ -17,6 +19,14 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 
 var router = express.Router();
+// === CUSTOM FUNCTION TO GENERATE RETURN MESSAGE FOR BAD ROUTES === //
+function getBadRouteJSON( req , res , route )
+{
+    res.json(	{
+        success:  false,
+        msg:      req.method + " requests are not supported by " + route
+    });
+}
 
 router.route('/postjwt')
     .post(authJwtController.isAuthenticated, function (req, res) {
@@ -108,54 +118,54 @@ router.post('/signin', function(req, res) {
     });
 });
 
-router.get('/Movies', function(req,res){
-    Movie.find({},function(err, Movies){
-        if(!Movie)
-            return res.json({ success: false, message: 'There are no movies in the database'});
-        res.json({ success: true, message: 'All Movies' });
+// router.get('/Movies', function(req,res){
+//     Movie.find({},function(err, Movies){
+//         if(!Movie)
+//             return res.json({ success: false, message: 'There are no movies in the database'});
+//         res.json({ success: true, message: 'All Movies' });
+//
+//     });
+// });
 
-    });
-});
+// router.route('/movie')
+//     .get(authJwtController.isAuthenticated, function (req, res) {
+//         var movieTitle = req.query.title;
+//         console.log('Movie Title: ' + movieTitle);
+//         Movie.findOne({title : movieTitle}).exec(function (err, movie) {
+//                 if (err) res.send(err);
+//
+//                 console.log('Movie ' + movie);
+//                 if (movie == null) {
+//                     res.status(400);
+//                     res.send('No movie found');
+//                 }
+//                 else{
+//                     res.status(200).jsonp(movie);
+//                 }
+//             }
+//         );
+//
+//     });
 
-router.route('/movie')
-    .get(authJwtController.isAuthenticated, function (req, res) {
-        var movieTitle = req.query.title;
-        console.log('Movie Title: ' + movieTitle);
-        Movie.findOne({title : movieTitle}).exec(function (err, movie) {
-                if (err) res.send(err);
-
-                console.log('Movie ' + movie);
-                if (movie == null) {
-                    res.status(400);
-                    res.send('No movie found');
-                }
-                else{
-                    res.status(200).jsonp(movie);
-                }
-            }
-        );
-
-    });
-
-router.post('/Movies',passport.authenticate('jwt',{session : false}),function(req,res){
-    if (!req.body.title || !req.body.released || !req.body.genre) {
-        res.json({success: false, message: 'Pass the title, year of release, and a specified genre'});
-    }
-    else {
-        var movie = new Movie();
-        movie.title = req.body.title;
-        movie.released = req.body.released;
-        movie.genre = req.body.genre;
-        movie.actors = req.body.actors;
-        // movie.actors.charName = req.body.actors;
-
-        // save the movie
-        movie.save(function(err) {
-            if(err) return res.send(err);
-            res.json({ success: true, message: 'Movie saved' });
-        });
-    }
-});
+// router.post('/Movies',passport.authenticate('jwt',{session : false}),function(req,res){
+//     if (!req.body.title || !req.body.released || !req.body.genre) {
+//         res.json({success: false, message: 'Pass the title, year of release, and a specified genre'});
+//     }
+//     else {
+//         var movie = new Movie();
+//         movie.title = req.body.title;
+//         movie.released = req.body.released;
+//         movie.genre = req.body.genre;
+//         movie.actors = req.body.actors;
+//         // movie.actors.charName = req.body.actors;
+//
+//         // save the movie
+//         movie.save(function(err) {
+//             if(err) return res.send(err);
+//             res.json({ success: true, message: 'Movie saved' });
+//         });
+//     }
+// });
 
 // router.put('/Movies',passport.authenticate('jwt',{session : false}),function(req,res){
 //     //var movie = new Movie();
@@ -175,31 +185,88 @@ router.post('/Movies',passport.authenticate('jwt',{session : false}),function(re
 //     });
 // });
 
-router.put('/Movies',passport.authenticate('jwt',{session : false}),function(req,res) {
-    var movieTitle = req.query.title;
-    console.log('Movie Title: ' + movieTitle);
-    Movie.findOne({title: movieTitle}).exec(function (err, movie) {
-        if (err) res.send(err);
-        movie.released = req.body.released;
-        movie.genre = req.body.genre;
-        movie.actors = req.body.actors;
-
-        movie.save(function (err) {
-            if (err) return res.send(err);
-            // res.json({success: true, message: 'Movie updated'});
-            res.status(200).json(movie);
+// router.put('/Movies',passport.authenticate('jwt',{session : false}),function(req,res) {
+//     var movieTitle = req.query.title;
+//     console.log('Movie Title: ' + movieTitle);
+//     Movie.findOne({title: movieTitle}).exec(function (err, movie) {
+//         if (err) res.send(err);
+//         movie.released = req.body.released;
+//         movie.genre = req.body.genre;
+//         movie.actors = req.body.actors;
+//
+//         movie.save(function (err) {
+//             if (err) return res.send(err);
+//             // res.json({success: true, message: 'Movie updated'});
+//             res.status(200).json(movie);
+//         });
+//     });
+// });
+//
+// router.delete('/Movies',passport.authenticate('jwt',{session : false}),function(req,res){
+//     Movie.findOne({title:req.body.title},function(err,movie) {
+//         if (err) res.send(err);
+//
+//         movie.remove({title:req.body.title});
+//         res.json({success: true, message: 'Movie Deleted'});
+//     });
+// });
+// === ROUTES TO /MOVIES === //
+router.route( '/movies' )
+    // === HANDLE GET REQUESTS === //
+    .get(
+        authJwtController.isAuthenticated,
+        movieController.getMovies
+    )
+    // === HANDLE POST REQUESTS === //
+    .post(
+        authJwtController.isAuthenticated,
+        movieController.postMovie
+    )
+    // === HANDLE PUT REQUESTS === //
+    .put(
+        authJwtController.isAuthenticated,
+        movieController.putMovie
+    )
+    // === HANDLE DELETE REQUESTS === //
+    .delete(
+        authJwtController.isAuthenticated,
+        movieController.deleteMovie
+    )
+    // === REJECT ALL OTHER REQUESTS TO /MOVIES === //
+    .all(
+        function( req , res )
+        {
+            getBadRouteJSON( req , res , "/movies" );
         });
-    });
-});
 
-router.delete('/Movies',passport.authenticate('jwt',{session : false}),function(req,res){
-    Movie.findOne({title:req.body.title},function(err,movie) {
-        if (err) res.send(err);
+// === ROUTES TO /REVIEWS === //
+router.route( '/reviews' )
+    // === HANDLE GET REQUESTS === //
+    .get( reviewController.getReviews )
 
-        movie.remove({title:req.body.title});
-        res.json({success: true, message: 'Movie Deleted'});
+    // === HANDLE POST REQUESTS === //
+    .post(
+        authJwtController.isAuthenticated,
+        reviewController.postReview
+    )
+    // === REJECT ALL OTHER REQUESTS TO /MOVIES === //
+    .all(
+        function( req , res )
+        {
+            getBadRouteJSON( req , res , "/movies" );
+        });
+
+
+// === ATTEMPT TO ROUTE REQUEST === //
+app.use( '/' , router );
+
+// === IF UNEXPEDTED ROUTE IS SENT, REJECT IT HERE === //
+app.use(
+    function( req , res )
+    {
+        getBadRouteJSON( req , res , "this URL path" );
     });
-});
+
 
 app.use('/', router);
 app.listen(process.env.PORT || 8080);
