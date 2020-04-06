@@ -84,7 +84,7 @@ exports.postMovie =
             res.status( 400 ).send({ msg: 'movie must have at least three actors' });
             return;
         }
-        else if ( !req.body.actors.every(function(actor){return actor.actorName && actor.characterName;}) )
+        else if ( !req.body.actors.every(function(actor){return actor.actorName && actor.charName;}) )
         {
             res.status( 400 ).send({ msg: 'actors must have a name and a character' });
             return;
@@ -156,7 +156,7 @@ exports.putMovie =
             res.status( 400 ).send({ msg: 'movie must have at least three actors' });
             return;
         }
-        else if ( !req.body.actors.every(function(actor){return actor.actorName && actor.characterName;}) )
+        else if ( !req.body.actors.every(function(actor){return actor.actorName && actor.charName;}) )
         {
             res.status( 400 ).send({ msg: 'actors must have a name and a character' });
             return;

@@ -33,12 +33,12 @@ exports.postReview =
             res.status( 500 ).send( { msg : 'movieTitle validation failed' } );
         }
         // === Validate Reviewer Field === //
-        else if ( !req.body.reviewer || req.body.reviewer != decoded.username )
+        else if ( !req.body.reviewer )
         {
             res.status( 500 ).send( { msg : 'Reviewer validation failed' } );
         }
         // === Validate Quote Field === //
-        else if ( !req.body.quote || req.body.quote == '' )
+        else if ( !req.body.quote  )
         {
             res.status( 500 ).send( { msg : 'Quote validation failed' } );
         }

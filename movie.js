@@ -46,7 +46,7 @@ var movieSchema  =  new Schema({
         required :	true,
         items    :	{
             actorName     : String,
-            characterName : String
+            charName : String
         },
         minItems : 3
     },
