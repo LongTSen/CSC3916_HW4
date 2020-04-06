@@ -3,42 +3,42 @@ const Movie  =  require( "./movie" );
 exports.getMovies =
     async function( req , res )
     {
+        reviews = req.query.reviews;
         // If the request desires reviews, aggregate query for reviews too
-        if (req.query.reviews==='true') {
+        if (reviews && reviews.toLowerCase()=='true')
+        {
+            // TODO
             // === Prepare Query === //
-            //var query = req.query;
-            //delete query.reviews;
-            const dbName = 'test';
-            client.connect(process.env.DB), function (err, client) {
-                if (err) {
-                    throw err;
-                }
-                let collection = client.db(dbName).collection('movies');
-                collection.aggregate([
-                    {
-                        $lookup: {
-                            from: "reviews",
-                            localField: 'title',
-                            foreignField: 'movieTitle',
-                            as: 'reviews'
-                        }
-                    },
-                    {
-                        $project: {
-                            title: 1,
-                            actors: 2,
-                            released: 3,
-                            genre: 4,
-                            reviews: '$reviews',
-                            avgRating: {$avg: "$reviews.rating"}
-                        }
-                    },
-                    {
-                        $sort: {avgRating: -1}
+            query = req.query;
+            delete query.reviews;
+
+            movies = await Movie.aggregate([
+                {
+                    $match:		query
+                },
+                {
+                    $lookup:	{
+                        from         : 'reviews',
+                        localField   : 'title',
+                        foreignField : 'movieTitle',
+                        as           : 'reviews'
                     }
-                ]);
-                res.status(200).send(movies);
-            }
+                },
+                {
+                    $project:	{
+                        title: 1,
+                        actors: 2,
+                        released:3,
+                        genre:4,
+                        reviews:'$reviews',
+                        avgRating: { $avg : "$reviews.rating" }
+                    }
+                },
+                {
+                    $sort:		{ avgRating : -1 }
+                }
+            ]);
+            res.status( 200 ).send( movies );
         }
         // If reviews are not desired, just query movies
         else

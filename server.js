@@ -61,14 +61,14 @@ router.route('/users')
         });
     });
 
-router.route('/movies')
-    .get(authJwtController.isAuthenticated, function (req, res) {
-        Movie.find(function (err, movies) {
-            if (err) res.send(err);
-            // return the users
-            res.json(movies);
-        });
-    });
+// router.route('/movies')
+//     .get(authJwtController.isAuthenticated, function (req, res) {
+//         Movie.find(function (err, movies) {
+//             if (err) res.send(err);
+//             // return the users
+//             res.json(movies);
+//         });
+//     });
 
 router.post('/signup', function(req, res) {
     if (!req.body.username || !req.body.password) {
