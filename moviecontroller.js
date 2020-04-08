@@ -233,18 +233,41 @@ exports.deleteMovie =
             });
             return;
         }
-        Movie.deleteOne(
+        Movie.findOne(
             { title : req.body.title },
-            ( err , movie) =>
+            ( err , movie ) =>
             {
                 if ( err )
                 {
-                    res.status( 500 ).send( err );
+                    req.status( 500 ).send( err );
                     return;
                 }
-                res.status( 200 ).send({
-                    success : true,
-                    msg     : 'movie removed successfully'
-                });
+
+                if ( movie )
+                {
+                    Movie.deleteOne(
+                        { title : req.body.title },
+                        ( err , movie) =>
+                        {
+                            if ( err )
+                            {
+                                res.status( 500 ).send( err );
+                                return;
+                            }
+                            else {
+                                res.status(200).send({
+                                    success: true,
+                                    msg: 'movie removed successfully'
+                                });
+                            }
+                        });
+                }
+                if (!movie)
+                {
+                    res.status(200).send({
+                        success: false,
+                        msg:"That movie doesn't exit"});
+                }
             });
-    }
+
+    };
