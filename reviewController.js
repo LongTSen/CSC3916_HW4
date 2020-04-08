@@ -68,7 +68,7 @@ exports.postReview =
                     quote      :  req.body.quote,
                     rating     :  req.body.rating
                 });
-                trackDimension(movie.genre, '/reviews', 'APIRequestforMovieReview', newReview.reviewScore.toString(), newReview.movieName, '1')
+                trackDimension(movie.genre, '/reviews', 'APIRequestforMovieReview', review.rating.toString(), review.movieTitle, '1')
                     .then(function (response) {
 
                 // === Save the Review Object === //
