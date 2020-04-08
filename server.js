@@ -9,8 +9,7 @@ var cors = require('cors');
 var Review = require( './review' );
 var movieController =  require( './moviecontroller' );
 var reviewController =  require( './reviewController' );
-const crypto = require("crypto");
-const rp = require('request-promise');
+
 
 
 
@@ -21,7 +20,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(passport.initialize());
-const GA_TRACKING_ID = process.env.GA_KEY;
 
 var router = express.Router();
 // === CUSTOM FUNCTION TO GENERATE RETURN MESSAGE FOR BAD ROUTES === //
@@ -32,58 +30,6 @@ function getBadRouteJSON( req , res , route )
         msg:      req.method + " requests are not supported by " + route
     });
 }
-function trackDimension(category, action, label, value, dimension, metric) {
-
-    var options = { method: 'GET',
-        url: 'https://www.google-analytics.com/collect',
-        qs:
-            {   // API Version.
-                v: '1',
-                // Tracking ID / Property ID.
-                tid: GA_TRACKING_ID,
-                // Random Client Identifier. Ideally, this should be a UUID that
-                // is associated with particular user, device, or browser instance.
-                cid: crypto.randomBytes(16).toString("hex"),
-                // Event hit type.
-                t: 'event',
-                // Event category.
-                ec: category,
-                // Event action.
-                ea: action,
-                // Event label.
-                el: label,
-                // Event value.
-                ev: value,
-                // Custom Dimension
-                cd1: dimension,
-                // Custom Metric
-                cm1: metric,
-                cd3: dimension,
-                cm3: metric
-
-            },
-        headers:
-            {  'Cache-Control': 'no-cache' } };
-
-    return rp(options);
-};
-
-router.route('/ATriggerVerify.txt')
-    .get(function (req, res) {
-        // Event value must be numeric.
-        console.log(express.static(__dirname + '/ATriggerverify.txt'))
-        res.sendfile('./ATriggerVerify.txt');
-        // res.sendfile('./ATriggerVerify.txt', {root: express.static(__dirname + '/ATriggerverify.txt')});
-    });
-router.route('/test')
-    .get(function (req, res) {
-        // Event value must be numeric.
-        trackDimension('Feedback', 'Rating', 'Feedback for Movie', '3', 'MOVIE NAME', '1')
-            .then(function (response) {
-                console.log(JSON.stringify(response.body));
-                res.status(200).send('Event tracked.').end();
-            })
-    });
 
 router.route('/postjwt')
     .post(authJwtController.isAuthenticated, function (req, res) {

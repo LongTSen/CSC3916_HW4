@@ -1,3 +1,4 @@
+
 const Movie          =  require( "./movie" );
 const Review        =  require( "./review" );
 let   jwt            =  require( 'jsonwebtoken' );
@@ -68,8 +69,6 @@ exports.postReview =
                     quote      :  req.body.quote,
                     rating     :  req.body.rating
                 });
-                trackDimension(movie.genre, '/reviews', 'APIRequestforMovieReview', review.rating.toString(), review.movieTitle, '1')
-                    .then(function (response) {
 
                 // === Save the Review Object === //
                 review.save(
@@ -83,7 +82,6 @@ exports.postReview =
                             success : true,
                             msg     : "Review Successfully Posted"
                         });
-                    });
                     });
             }
         }
