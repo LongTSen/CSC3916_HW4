@@ -30,6 +30,7 @@ exports.getMovies =
                         actors: 2,
                         released:3,
                         genre:4,
+                        imageUrl:5,
                         reviews:'$reviews',
                         avgRating: { $avg : "$reviews.rating" }
                     }
@@ -194,7 +195,7 @@ exports.putMovie =
                                     msg     : 'movie updated successfully'
                                 });
                             });
-                        return
+                        return;
                     }
                     else
                     {

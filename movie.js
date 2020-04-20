@@ -50,6 +50,9 @@ var movieSchema  =  new Schema({
         },
         minItems : 3
     },
+    imageUrl	 :  {
+        type : String
+    }
 
 });
 
