@@ -114,7 +114,8 @@ exports.postMovie =
                             title        : req.body.title,
                             released     : req.body.released,
                             genre        : req.body.genre,
-                            actors       : req.body.actors
+                            actors       : req.body.actors,
+                            imageUrl       :req.body.imageUrl
                         });
                         toSave.save(
                             ( err , movie ) =>
@@ -182,6 +183,7 @@ exports.putMovie =
                         movie.released  =  req.body.released;
                         movie.genre         = req.body.genre;
                         movie.actors        =  req.body.actors;
+                        movie.imageUrl      =req.body.imageUrl;
                         movie.save(
                             ( err , movie ) =>
                             {
@@ -203,7 +205,8 @@ exports.putMovie =
                             title        : req.body.title,
                             released : req.body.released,
                             genre        : req.body.genre,
-                            actors       : req.body.actors
+                            actors       : req.body.actors,
+                            imageUrl    :  req.body.imageUrl
                         });
                         toSave.save(
                             ( err , movie ) =>
